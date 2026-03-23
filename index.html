@@ -1,79 +1,458 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shilpa Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus News | Modern News Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #2563eb; /* Blue accent */
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8f9fa;
+            --bg-surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --transition: all 0.3s ease;
+        }
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
-  text-align: center;
-}
+        body.dark-mode {
+            --primary: #3b82f6;
+            --bg-body: #111827;
+            --bg-surface: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #374151;
+        }
 
-header {
-  padding: 20px;
-  background: #1e293b;
-}
+        /* --- RESET & TYPOGRAPHY --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+        a { text-decoration: none; color: inherit; cursor: pointer; }
+        ul { list-style: none; }
+        img { max-width: 100%; height: auto; display: block; object-fit: cover; }
+        button { cursor: pointer; font-family: inherit; }
 
-h1 {
-  color: #38bdf8;
-}
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-actions { display: flex; align-items: center; gap: 1.5rem; }
+        .icon-btn { background: none; border: none; font-size: 1.2rem; color: var(--text-main); }
+        .btn { background: var(--primary); color: white; padding: 0.5rem 1.2rem; border-radius: 6px; border: none; font-weight: 500; transition: var(--transition); }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-section {
-  padding: 40px 20px;
-}
+        /* --- BREAKING NEWS TICKER --- */
+        .ticker-wrap {
+            background: var(--primary); color: white; padding: 0.5rem 5%; overflow: hidden; display: flex; align-items: center;
+        }
+        .ticker-label { font-weight: 600; margin-right: 1rem; white-space: nowrap; background: #dc2626; padding: 0.2rem 0.8rem; border-radius: 4px; font-size: 0.8rem;}
+        .ticker { width: 100%; overflow: hidden; }
+        .ticker-content { white-space: nowrap; animation: ticker 20s linear infinite; display: inline-block; font-size: 0.9rem;}
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-.card {
-  background: #1e293b;
-  margin: 10px;
-  padding: 20px;
-  border-radius: 10px;
-}
+        /* --- MAIN LAYOUT & VIEWS --- */
+        main { max-width: 1400px; margin: 2rem auto; padding: 0 5%; min-height: 70vh; }
+        .view { display: none; animation: fadeIn 0.4s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-button {
-  padding: 10px 20px;
-  background: #38bdf8;
-  border: none;
-  color: black;
-  border-radius: 5px;
-}
-</style>
+        /* --- HOME PAGE GRID --- */
+        .home-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 2rem; }
+        
+        /* Slider / Featured */
+        .featured-article { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 2rem; cursor: pointer;}
+        .featured-article img { height: 400px; width: 100%; transition: transform 0.5s; }
+        .featured-article:hover img { transform: scale(1.05); }
+        .featured-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: white; }
+        .category-tag { background: var(--primary); color: white; padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500; text-transform: uppercase; display: inline-block; margin-bottom: 0.5rem;}
+        
+        /* News Cards Grid */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .news-card { background: var(--bg-surface); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column;}
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .news-card img { height: 200px; width: 100%; }
+        .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;}
+        .card-title { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0; color: var(--text-main); line-height: 1.4; }
+        .card-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: auto; padding-top: 1rem;}
+
+        /* Sidebar */
+        .sidebar { background: var(--bg-surface); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--border); height: fit-content;}
+        .sidebar h3 { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary); display: inline-block; }
+        .sidebar-item { display: flex; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;}
+        .sidebar-item img { width: 80px; height: 80px; border-radius: 6px; }
+        .sidebar-item h4 { font-size: 0.95rem; font-weight: 500; line-height: 1.3;}
+
+        /* --- ARTICLE PAGE --- */
+        .article-header { text-align: center; max-width: 800px; margin: 0 auto 2rem; }
+        .article-title { font-size: 2.5rem; line-height: 1.2; margin: 1rem 0; }
+        .article-meta { display: flex; justify-content: center; gap: 1.5rem; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .article-hero { width: 100%; height: 500px; border-radius: 12px; margin-bottom: 2rem; }
+        .article-content { max-width: 800px; margin: 0 auto; font-size: 1.1rem; line-height: 1.8; color: var(--text-main); }
+        .article-content p { margin-bottom: 1.5rem; }
+        
+        /* Share & Comments */
+        .share-buttons { display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; }
+        .share-btn { width: 40px; height: 40px; border-radius: 50%; border: none; color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;}
+        .bg-fb { background: #1877f2; } .bg-tw { background: #1da1f2; } .bg-wa { background: #25d366; }
+        
+        .comments-section { max-width: 800px; margin: 0 auto 3rem; background: var(--bg-surface); padding: 2rem; border-radius: 10px; border: 1px solid var(--border);}
+        .comment-box { width: 100%; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-body); color: var(--text-main); margin-bottom: 1rem; font-family: inherit; resize: vertical;}
+
+        /* --- FORMS (Login, Contact) --- */
+        .form-container { max-width: 400px; margin: 2rem auto; background: var(--bg-surface); padding: 2rem; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-control { width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-body); color: var(--text-main); }
+        .form-control:focus { outline: none; border-color: var(--primary); }
+
+        /* --- FOOTER --- */
+        footer { background: #111827; color: #f9fafb; padding: 4rem 5% 2rem; margin-top: 4rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1400px; margin: 0 auto; border-bottom: 1px solid #374151; padding-bottom: 2rem;}
+        .footer-col h4 { margin-bottom: 1.5rem; color: var(--primary); }
+        .footer-col ul li { margin-bottom: 0.8rem; color: #9ca3af; transition: color 0.3s;}
+        .footer-col ul li a:hover { color: #ffffff; }
+        .footer-bottom { text-align: center; padding-top: 2rem; color: #9ca3af; font-size: 0.9rem; }
+
+        /* --- RESPONSIVE DESIGN --- */
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); }
+        @media (max-width: 900px) {
+            .home-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-surface); padding: 1rem 5%; border-bottom: 1px solid var(--border); }
+            .nav-links.show { display: flex; }
+            .mobile-menu-btn { display: block; }
+            .article-hero { height: 300px; }
+            .article-title { font-size: 1.8rem; }
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-  <h1>Hi, I'm Shilpa 👋</h1>
-  <p>Web Developer | Student</p>
-</header>
+    <header>
+        <div class="ticker-wrap">
+            <span class="ticker-label">BREAKING</span>
+            <div class="ticker">
+                <span class="ticker-content">Global markets hit record highs today | Tech giant announces revolutionary AI model | Major sporting event delayed due to weather | New space telescope captures stunning galaxy images</span>
+            </div>
+        </div>
+        <nav class="navbar">
+            <div class="logo" onclick="navigate('home')" style="cursor:pointer;">Nexus<span style="color:var(--text-main)">News</span></div>
+            <button class="mobile-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            <ul class="nav-links" id="navLinks">
+                <li><a onclick="navigate('home')">Home</a></li>
+                <li><a onclick="navigate('category')">Technology</a></li>
+                <li><a onclick="navigate('category')">Business</a></li>
+                <li><a onclick="navigate('about')">About Us</a></li>
+                <li><a onclick="navigate('contact')">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="icon-btn" onclick="toggleDarkMode()"><i class="fas fa-moon" id="theme-icon"></i></button>
+                <button class="icon-btn" onclick="navigate('search')"><i class="fas fa-search"></i></button>
+                <button class="btn" onclick="navigate('login')">Sign In</button>
+            </div>
+        </nav>
+    </header>
 
-<section>
-  <h2>About Me</h2>
-  <p>I am learning web development and building cool websites 🚀</p>
-</section>
+    <main id="app">
+        
+        <div id="home" class="view active">
+            <div class="home-grid">
+                <div class="main-content">
+                    <div class="featured-article" onclick="navigate('article')">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Technology">
+                        <div class="featured-content">
+                            <span class="category-tag">Technology</span>
+                            <h2>The Future of Quantum Computing is Arriving Faster Than Expected</h2>
+                            <p class="card-meta">By Sarah Jenkins • 2 hours ago</p>
+                        </div>
+                    </div>
 
-<section>
-  <h2>My Projects</h2>
-  <div class="card">
-    <h3>Project 1</h3>
-    <p>My first website using HTML</p>
-  </div>
+                    <div class="news-grid">
+                        <div class="news-card" onclick="navigate('article')">
+                            <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Stocks">
+                            <div class="card-body">
+                                <span class="category-tag" style="background: #10b981;">Business</span>
+                                <h3 class="card-title">Stock Markets Rally as Inflation Cools Down</h3>
+                                <p class="card-meta">Oct 24, 2023</p>
+                            </div>
+                        </div>
+                        <div class="news-card" onclick="navigate('article')">
+                            <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Sports">
+                            <div class="card-body">
+                                <span class="category-tag" style="background: #f59e0b;">Sports</span>
+                                <h3 class="card-title">Championship Finals Set to Break Viewership Records</h3>
+                                <p class="card-meta">Oct 24, 2023</p>
+                            </div>
+                        </div>
+                        <div class="news-card" onclick="navigate('article')">
+                            <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Entertainment">
+                            <div class="card-body">
+                                <span class="category-tag" style="background: #8b5cf6;">Entertainment</span>
+                                <h3 class="card-title">Award-Winning Director Announces Next Blockbuster</h3>
+                                <p class="card-meta">Oct 23, 2023</p>
+                            </div>
+                        </div>
+                        <div class="news-card" onclick="navigate('article')">
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Science">
+                            <div class="card-body">
+                                <span class="category-tag" style="background: #06b6d4;">Science</span>
+                                <h3 class="card-title">New Exoplanet Discovered in Habitable Zone</h3>
+                                <p class="card-meta">Oct 22, 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  <div class="card">
-    <h3>Project 2</h3>
-    <p>Coming soon...</p>
-  </div>
-</section>
+                <aside class="sidebar">
+                    <h3>Trending Now</h3>
+                    <div class="sidebar-item" onclick="navigate('article')">
+                        <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Money">
+                        <div>
+                            <span class="category-tag" style="padding: 0.1rem 0.4rem; font-size:0.6rem;">Finance</span>
+                            <h4>Central Bank Announces New Interest Rates</h4>
+                        </div>
+                    </div>
+                    <div class="sidebar-item" onclick="navigate('article')">
+                        <img src="https://images.unsplash.com/photo-1614064641913-6b1e6cb5b3ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Crypto">
+                        <div>
+                            <span class="category-tag" style="padding: 0.1rem 0.4rem; font-size:0.6rem;">Crypto</span>
+                            <h4>Bitcoin Surges Past Previous All-Time Highs</h4>
+                        </div>
+                    </div>
+                    <div class="sidebar-item" onclick="navigate('article')" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Tech">
+                        <div>
+                            <span class="category-tag" style="padding: 0.1rem 0.4rem; font-size:0.6rem;">Tech</span>
+                            <h4>Smartphone Giant Leaks Next Gen Features</h4>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
 
-<section>
-  <h2>Contact</h2>
-  <p>Email: yourname@gmail.com</p>
-  <button>Message Me</button>
-</section>
+        <div id="article" class="view">
+            <div class="article-header">
+                <span class="category-tag">Technology</span>
+                <h1 class="article-title">The Future of Quantum Computing is Arriving Faster Than Expected</h1>
+                <div class="article-meta">
+                    <span><i class="far fa-user"></i> Sarah Jenkins</span>
+                    <span><i class="far fa-clock"></i> Oct 24, 2023</span>
+                    <span><i class="far fa-comments"></i> 24 Comments</span>
+                </div>
+            </div>
+            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Hero" class="article-hero">
+            
+            <div class="article-content">
+                <p><strong>San Francisco</strong> — In a breakthrough that has stunned the scientific community, researchers at the Global Institute of Technology have announced a significant leap forward in quantum stability, solving a problem that has plagued physicists for over a decade.</p>
+                
+                <p>Quantum computers operate using quantum bits, or qubits, which can exist in multiple states simultaneously. This allows them to perform complex calculations at speeds impossible for traditional computers. However, maintaining the delicate state of these qubits—a process known as coherence—has been extremely difficult. Until now.</p>
+                
+                <p>The new method utilizes a combination of advanced cryogenic cooling techniques and a novel error-correction algorithm powered by machine learning. "We've effectively extended coherence time by a factor of 100," stated Dr. Elena Rostova, lead researcher on the project. "This takes us from the realm of theoretical experimentation into practical application."</p>
 
+                <div class="share-buttons">
+                    <button class="share-btn bg-fb"><i class="fab fa-facebook-f"></i></button>
+                    <button class="share-btn bg-tw"><i class="fab fa-twitter"></i></button>
+                    <button class="share-btn bg-wa"><i class="fab fa-whatsapp"></i></button>
+                </div>
+            </div>
+
+            <div class="comments-section">
+                <h3>Leave a Comment</h3>
+                <textarea class="comment-box" rows="4" placeholder="Share your thoughts..."></textarea>
+                <button class="btn">Post Comment</button>
+            </div>
+        </div>
+
+        <div id="category" class="view">
+            <h1 style="margin-bottom: 2rem; border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 0.5rem;">Technology News</h1>
+            <div class="news-grid">
+                <div class="news-card" onclick="navigate('article')">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3" alt="Tech">
+                    <div class="card-body">
+                        <h3 class="card-title">Quantum Computing Breakthrough</h3>
+                        <p class="card-meta">2 hours ago</p>
+                    </div>
+                </div>
+                <div class="news-card" onclick="navigate('article')">
+                    <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3" alt="Tech">
+                    <div class="card-body">
+                        <h3 class="card-title">Smartphone Giant Leaks Features</h3>
+                        <p class="card-meta">5 hours ago</p>
+                    </div>
+                </div>
+                 <div class="news-card" onclick="navigate('article')">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3" alt="Cyber">
+                    <div class="card-body">
+                        <h3 class="card-title">Cybersecurity Threats on the Rise</h3>
+                        <p class="card-meta">1 day ago</p>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <button class="btn" style="background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border);">Load More</button>
+            </div>
+        </div>
+
+        <div id="search" class="view">
+            <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <h1>Search News</h1>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <input type="text" class="form-control" placeholder="Keywords, topics, or authors...">
+                    <button class="btn">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="about" class="view">
+            <div class="article-content" style="text-align: center;">
+                <h1>About Nexus News</h1>
+                <p style="margin-top: 2rem;">Nexus News is an independent digital media platform committed to delivering accurate, unbiased, and comprehensive news from around the globe. Founded in 2023, we believe in the power of journalism to inform, inspire, and ignite change.</p>
+            </div>
+        </div>
+
+        <div id="contact" class="view">
+            <div class="form-container">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Contact Us</h2>
+                <form onsubmit="event.preventDefault(); alert('Message sent!');">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea class="form-control" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="login" class="view">
+            <div class="form-container">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Welcome Back</h2>
+                <form onsubmit="event.preventDefault(); navigate('home');">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-bottom: 1rem;">Sign In</button>
+                    <p style="text-align: center; font-size: 0.9rem;">Don't have an account? <a href="#" style="color: var(--primary);">Sign Up</a></p>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 style="color: white; margin-bottom: 1rem;">Nexus<span style="color: var(--primary)">News</span></h3>
+                <p style="color: #9ca3af; font-size: 0.9rem;">Delivering the truth, one story at a time. Independent journalism for the modern era.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a onclick="navigate('category')">World</a></li>
+                    <li><a onclick="navigate('category')">Politics</a></li>
+                    <li><a onclick="navigate('category')">Technology</a></li>
+                    <li><a onclick="navigate('category')">Business</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a onclick="navigate('about')">About Us</a></li>
+                    <li><a onclick="navigate('contact')">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div style="display: flex; gap: 1rem; font-size: 1.5rem;">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Nexus News. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Router: Switch between simulated "pages"
+        function navigate(viewId) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            // Show target view
+            document.getElementById(viewId).classList.add('active');
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Hide mobile menu if open
+            const navLinks = document.getElementById('navLinks');
+            if(navLinks.classList.contains('show')) {
+                navLinks.classList.remove('show');
+            }
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('theme-icon');
+            if(document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('show');
+        }
+    </script>
 </body>
 </html>
